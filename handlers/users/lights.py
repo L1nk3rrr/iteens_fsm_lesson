@@ -10,3 +10,31 @@ async def bot_traffic_light_on(message: types.Message):
     await message.answer("Ви увімкнули світлофор 🚦.\n"
                          "Тепер можете увімкнути будь-яке світло:",
                          reply_markup=lights_all)
+    
+@dp.message_handler(text="червоний", state=Lights.StateOn)
+async def bot_red_lights_on(message: types.Message):
+    await Lights.StateRed.set()
+    await message.answer("Ви увімкнули червоне світло 🔴\n"
+                         "Тепер можете увімкнути жовте",
+                         reply_markup=yellow_kb)
+
+@dp.message_handler(text="жовтий", state=Lights.StateRed)
+async def bot_yellow_light(message: types.Message):
+    await Lights.StateYellow.set()
+    await message.answer("Ви увімкнули жовте світло 🟡\n"
+                         "Тепер можете увімкнути зелене",
+                         reply_markup=green_kb)
+    
+@dp.message_handler(text="зелений", state=Lights.StateYellow)
+async def bot_green_light(message: types.Message):
+    await Lights.StateGreen.set()
+    await message.answer("Ви увімкнули зелене світло 🟢\n"
+                         "Тепер можете увімкнути червоне",
+                         reply_markup=red_kb)
+    
+@dp.message_handler(commands="trafficlightsoff", state="*")
+async def bot_light_off(message: types.Message):
+    await Lights.StateOff.set()
+    await message.answer("Ви вимкнули світлофор\n"
+                         "Для увімкнення натисніть команду /trafficlighton",
+                         reply_markup=None)
